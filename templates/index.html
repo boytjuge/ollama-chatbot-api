@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for chat interface */
+        .chat-container {
+            max-width: 600px;
+            margin: 50px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .chat-message {
+            margin-bottom: 15px;
+        }
+        .chat-message .message-content {
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .chat-message.user .message-content {
+            background-color: #007bff;
+            color: white;
+            margin-left: auto;
+        }
+        .chat-message.bot .message-content {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .input-container button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Chat Container -->
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will be appended here -->
+        </div>
+        <div class="input-container">
+            <input type="text" id="user-message" placeholder="Type your message..." />
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and custom script -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Reference to the chat box and input field
+        const chatBox = document.getElementById('chat-box');
+        const userMessageInput = document.getElementById('user-message');
+        const sendButton = document.getElementById('send-btn');
+
+        // Function to append a message to the chat box
+        function appendMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('chat-message', sender);
+
+            const messageContentDiv = document.createElement('div');
+            messageContentDiv.classList.add('message-content');
+            messageContentDiv.textContent = content;
+
+            messageDiv.appendChild(messageContentDiv);
+            chatBox.appendChild(messageDiv);
+
+            // Scroll to the bottom of the chat
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Function to handle the message sending
+        async function sendMessage() {
+            const userMessage = userMessageInput.value.trim();
+
+            if (userMessage) {
+                // Append the user's message to the chat
+                appendMessage(userMessage, 'user');
+
+                // Clear the input field
+                userMessageInput.value = '';
+
+                try {
+                    // Call the /chatapi endpoint using fetch
+                    const response = await fetch('/chatapi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ question: userMessage })
+                    });
+
+                    // Parse the JSON response
+                    const data = await response.text();
+
+                    // Append the bot's response to the chat
+                    appendMessage(data, 'bot');
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                    appendMessage("Sorry, there was an error. Please try again.", 'bot');
+                }
+            }
+        }
+
+        // Event listener for send button
+        sendButton.addEventListener('click', sendMessage);
+
+        // Event listener for pressing Enter key
+        userMessageInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
