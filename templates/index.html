@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Interface</title>
+    <title>CodingByAmp, AI CHAT</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+   
     <style>
         /* Custom styles for chat interface */
         .chat-container {
-            max-width: 600px;
+            max-width: 840px;
             margin: 50px auto;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -61,18 +63,43 @@
         .input-container button:hover {
             background-color: #0056b3;
         }
+        /* Social Media Icons */
+        .social-icons {
+            margin-top: 20px;
+        }
+        .social-icons a {
+            margin-right: 15px;
+            font-size: 24px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-
+   
     <!-- Chat Container -->
     <div class="chat-container">
-        <div class="chat-box" id="chat-box">
-            <!-- Messages will be appended here -->
-        </div>
-        <div class="input-container">
-            <input type="text" id="user-message" placeholder="Type your message..." />
-            <button id="send-btn">Send</button>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="chat-box" id="chat-box">
+                    <!-- Messages will be appended here -->
+                </div>
+                <div class="input-container">
+                    <input type="text" id="user-message" placeholder="Type your message..." />
+                    <button id="send-btn">Send</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4>CodingByAmp, AI CHAT</h4>
+                <p>[ Donet สนับสนุน ]<img src="{{url_for('static',filename='image/donet_ttb.jpg')}}" width="200"></p>
+                <p>[ subscribe กดติตดาม ]
+                    <div class="social-icons">
+                        <a href="https://www.youtube.com/@CodingByAmp" target="_blank" title="YouTube" style="color: red;"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/codingbyamp" target="_blank" title="Facebook" style="color: #007bff;"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.twitch.tv/codingbyamp" target="_blank" title="Twitch" style="color: purple;"><i class="fab fa-twitch"></i></a>
+                        <a href="https://www.tiktok.com/@codingbyamp" target="_blank" title="TikTok" style="color: #333;"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -103,13 +130,16 @@
         // Function to handle the message sending
         async function sendMessage() {
             const userMessage = userMessageInput.value.trim();
-
+            
             if (userMessage) {
                 // Append the user's message to the chat
                 appendMessage(userMessage, 'user');
 
                 // Clear the input field
                 userMessageInput.value = '';
+                
+                // Append the loading message
+                appendMessage("Bot is typing...", 'bot');
 
                 try {
                     // Call the /chatapi endpoint using fetch
@@ -121,11 +151,22 @@
                         body: JSON.stringify({ question: userMessage })
                     });
 
-                    // Parse the JSON response
+                    // Parse the text response
                     const data = await response.text();
 
-                    // Append the bot's response to the chat
-                    appendMessage(data, 'bot');
+                    // Remove the loading message
+                    const loadingMessage = document.querySelector('.chat-message.bot .message-content');
+                    if (loadingMessage) {
+                        loadingMessage.textContent = '';
+                    }
+
+                    // Split the response by sentence and display them one by one
+                    const sentences = data.split('. ');
+                    sentences.forEach((sentence, index) => {
+                        setTimeout(() => {
+                            appendMessage(sentence.trim() , 'bot');
+                        }, index * 1500); // Delay each sentence by 1.5 seconds
+                    });
                 } catch (error) {
                     console.error('Error sending message:', error);
                     appendMessage("Sorry, there was an error. Please try again.", 'bot');

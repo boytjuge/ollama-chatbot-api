@@ -28,11 +28,11 @@ def  chatapi():
         }])
 
         OllamaResponse = response['message']['content']
-
+        yield OllamaResponse
         # Split response by sentence or other logic
-        sentences = OllamaResponse.split('. ')
-        for sentence in sentences:
-            yield sentence + '. '  # Yielding each sentence as it's processed
+        # sentences = OllamaResponse.split('. ')
+        # for sentence in sentences:
+        #     yield sentence + '. '  # Yielding each sentence as it's processed
 
     return Response(generate(), content_type='text/plain; charset=utf-8')
 
