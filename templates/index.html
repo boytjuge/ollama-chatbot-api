@@ -90,8 +90,9 @@
             </div>
             <div class="col-md-4">
                 <h4>CodingByAmp, AI CHAT</h4>
-                <p>[ Donet สนับสนุน ]<img src="{{url_for('static',filename='image/donet_ttb.jpg')}}" width="200"></p>
-                <p>[ subscribe กดติตดาม ]
+                
+                <p>[ donate สนับสนุน ]<img src="{{url_for('static',filename='image/donet_ttb.jpg')}}" width="200"></p>
+                <p>[ subscribe กดติดตาม ]
                     <div class="social-icons">
                         <a href="https://www.youtube.com/@CodingByAmp" target="_blank" title="YouTube" style="color: red;"><i class="fab fa-youtube"></i></a>
                         <a href="https://www.facebook.com/codingbyamp" target="_blank" title="Facebook" style="color: #007bff;"><i class="fab fa-facebook-f"></i></a>
@@ -99,6 +100,11 @@
                         <a href="https://www.tiktok.com/@codingbyamp" target="_blank" title="TikTok" style="color: #333;"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </p>
+                <p>"สนใจโปรเจกต์นี้ ทักแชท Facebook ได้เลย!"
+                    📩 สอบถามข้อมูลเพิ่มเติมหรือพูดคุยกันได้ทางแชทนะครับ/ค่ะ พร้อมตอบทุกคำถาม!</p>
+                <a class="chat-button" href="https://m.me/168964613779956" target="_blank">
+                    <i class="fab fa-facebook-messenger"></i> คลิกเพื่อทักแชท
+                </a>
             </div>
         </div>
     </div>
@@ -143,7 +149,7 @@
 
                 try {
                     // Call the /chatapi endpoint using fetch
-                    const response = await fetch('/chatapi', {
+                    const response = await fetch(`{{url_for('chatapi')|safe}}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -157,14 +163,20 @@
                     // Remove the loading message
                     const loadingMessage = document.querySelector('.chat-message.bot .message-content');
                     if (loadingMessage) {
-                        loadingMessage.textContent = '';
+                      //  loadingMessage.textContent = '';
+                       // loadingMessage.remove();
                     }
 
+
+
+                   // appendMessage("Bot is typing...", 'bot');
                     // Split the response by sentence and display them one by one
                     const sentences = data.split('. ');
+                   // console.log(sentences)
                     sentences.forEach((sentence, index) => {
                         setTimeout(() => {
-                            appendMessage(sentence.trim() , 'bot');
+
+                                appendMessage(sentence.trim() , 'bot');
                         }, index * 1500); // Delay each sentence by 1.5 seconds
                     });
                 } catch (error) {

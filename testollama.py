@@ -1,6 +1,6 @@
 from flask import Flask , render_template , url_for , jsonify ,redirect ,session,request , Response
 import   ollama
-
+import logging
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fafwfwfwr25*cmcXdm1!2421'
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -21,6 +21,8 @@ questiontToAsk = "what is youtube ?"
 def  chatapi():
     recieve = request.json
     questiontext = recieve['question']
+    #print(questiontext)
+    print({'ip': request.remote_addr , 'msg':questiontext})
     def generate():
         response = ollama.chat(model=desiredModel, messages=[{
             'role': 'user',
